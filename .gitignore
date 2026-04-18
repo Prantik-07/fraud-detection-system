@@ -1,0 +1,46 @@
+# ── Python ────────────────────────────────────────────────────────────────────
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# ── Virtual environments ───────────────────────────────────────────────────────
+venv/
+.venv/
+env/
+ENV/
+
+# ── Jupyter ────────────────────────────────────────────────────────────────────
+.ipynb_checkpoints/
+
+# ── Data (too large for Git — download from Kaggle) ───────────────────────────
+data/creditcard.csv
+data/*.csv
+
+# ── Models (Whitelisting essential files for deployment) ──────────────────────
+models/*.pkl
+models/test_probs.npy
+models/test_labels.npy
+!models/best_model.pkl
+!models/scaler.pkl
+!models/metrics.json
+!models/random_forest_model.pkl
+!models/xgboost_model.pkl
+!models/logistic_regression_model.pkl
+
+# ── IDE / OS ───────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
+
+# ── Environment variables ──────────────────────────────────────────────────────
+.env
+.env.local
+
+# ── Misc ───────────────────────────────────────────────────────────────────────
+*.log
+predictions.csv
