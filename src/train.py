@@ -186,7 +186,7 @@ def train_all():
             best_name  = name
 
     # ── Save best model ────────────────────────────────────────────────────────
-    joblib.dump(best_model, os.path.join(MODEL_DIR, "best_model.pkl"))
+    joblib.dump(best_model, os.path.join(MODEL_DIR, "best_model.pkl"), protocol=5)
     print(f"\n[train] ✅ Best model: {best_name} (F1={best_f1:.4f})")
     print(f"[train] Saved → models/best_model.pkl")
 

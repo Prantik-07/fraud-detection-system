@@ -49,7 +49,7 @@ def scale_features(df: pd.DataFrame, fit: bool = True, scaler=None):
     if fit:
         scaler = StandardScaler()
         df[["Amount", "Time"]] = scaler.fit_transform(df[["Amount", "Time"]])
-        joblib.dump(scaler, SCALER_PATH)
+        joblib.dump(scaler, SCALER_PATH, protocol=5)
         print(f"[preprocess] Scaler saved → {SCALER_PATH}")
     else:
         assert scaler is not None, "Pass a fitted scaler when fit=False"
