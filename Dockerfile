@@ -12,6 +12,7 @@ FROM python:3.12-slim
 # Install system deps as root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    wget \
     && rm -rf /var/lib/apt/lists/*
 
 # Setup non-root user
@@ -29,6 +30,12 @@ RUN pip install --no-cache-dir --user fastapi uvicorn
 # Copy project files
 COPY --chown=user . .
 COPY --from=frontend-builder --chown=user /app/client/dist ./client/dist
+
+# ── Train Model on Server to guarantee compatibility ─────────────────────────
+# We download a public mirror of the creditcard.csv dataset
+RUN mkdir -p data && \
+    wget -O data/creditcard.csv https://raw.githubusercontent.com/nsethi31/Credit-Card-Fraud-Detection/master/creditcard.csv && \
+    python -m src.train
 
 # Expose port
 EXPOSE 7860
