@@ -26,9 +26,18 @@ COPY . .
 # ── Copy built React app to a public directory in API ──────────────────────────
 COPY --from=frontend-builder /app/client/dist /app/client/dist
 
-# ── Expose FastAPI port ───────────────────────────────────────────────────────
-EXPOSE 8000
+# ── Expose FastAPI port (Hugging Face Spaces uses 7860) ────────────────────────
+EXPOSE 7860
+
+# ── Setup User for HF Spaces ──────────────────────────────────────────────────
+RUN useradd -m -u 1000 user
+USER user
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
+
+WORKDIR $HOME/app
+COPY --chown=user . $HOME/app
+COPY --from=frontend-builder --chown=user /app/client/dist $HOME/app/client/dist
 
 # ── Run FastAPI backend ───────────────────────────────────────────────────────
-# In production, the FastAPI app should be updated to mount the React build directory at /.
-CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]
