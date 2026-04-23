@@ -16,4 +16,4 @@ jobs:
       - name: Push to hub
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://Prantik-07:$HF_TOKEN@huggingface.co/spaces/Prantik-07/fraud-detection-dashboard main
+        run: git push --force https://x-access-token:$HF_TOKEN@huggingface.co/spaces/Prantik-07/fraud-detection-dashboard main
