@@ -1,8 +1,7 @@
-name: Sync to Hugging Face
+name: Sync to Hugging Face Hub
 on:
   push:
     branches: [main]
-  # allow manual trigger
   workflow_dispatch:
 
 jobs:
@@ -13,7 +12,9 @@ jobs:
         with:
           fetch-depth: 0
           lfs: true
-      - name: Push to hub
-        env:
-          HF_TOKEN: ${{ secrets.HF_TOKEN }}
-        run: git push --force https://x-access-token:$HF_TOKEN@huggingface.co/spaces/Prantik-07/fraud-detection-dashboard main
+      - name: Push to Hub
+        uses: huggingface/huggingface-action@v0.0.1
+        with:
+          username: "Prantik-07"
+          space: "fraud-detection-dashboard"
+          token: ${{ secrets.HF_TOKEN }}
