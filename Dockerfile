@@ -8,36 +8,30 @@ RUN npm run build
 
 # ── Base image for Backend ────────────────────────────────────────────────────
 FROM python:3.10-slim
-WORKDIR /app
 
-# ── Install system deps ───────────────────────────────────────────────────────
+# Install system deps as root
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-# ── Install Python dependencies ───────────────────────────────────────────────
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir fastapi uvicorn
-
-# ── Copy project files ────────────────────────────────────────────────────────
-COPY . .
-
-# ── Copy built React app to a public directory in API ──────────────────────────
-COPY --from=frontend-builder /app/client/dist /app/client/dist
-
-# ── Expose FastAPI port (Hugging Face Spaces uses 7860) ────────────────────────
-EXPOSE 7860
-
-# ── Setup User for HF Spaces ──────────────────────────────────────────────────
+# Setup non-root user
 RUN useradd -m -u 1000 user
 USER user
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH
-
 WORKDIR $HOME/app
-COPY --chown=user . $HOME/app
-COPY --from=frontend-builder --chown=user /app/client/dist $HOME/app/client/dist
 
-# ── Run FastAPI backend ───────────────────────────────────────────────────────
+# Install Python dependencies
+COPY --chown=user requirements.txt .
+RUN pip install --no-cache-dir --user -r requirements.txt
+RUN pip install --no-cache-dir --user fastapi uvicorn
+
+# Copy project files
+COPY --chown=user . .
+COPY --from=frontend-builder --chown=user /app/client/dist ./client/dist
+
+# Expose port
+EXPOSE 7860
+
+# Run FastAPI
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]
