@@ -9,6 +9,7 @@ Usage:
 import os
 import json
 import joblib
+import pickle
 import numpy as np
 import pandas as pd
 
@@ -22,9 +23,25 @@ ALL_COLS = ["Time"] + V_COLS + ["Amount"]   # 30 features total
 
 # ── Load artefacts ────────────────────────────────────────────────────────────
 def load_model_and_scaler():
-    model  = joblib.load(MODEL_PATH)
-    scaler = joblib.load(SCALER_PATH)
-    return model, scaler
+    """Load model and scaler from pkl files with cross-version safety."""
+    try:
+        print(f"[predict] Loading model: {MODEL_PATH}")
+        with open(MODEL_PATH, 'rb') as f:
+            model = pickle.load(f)
+        
+        print(f"[predict] Loading scaler: {SCALER_PATH}")
+        with open(SCALER_PATH, 'rb') as f:
+            scaler = pickle.load(f)
+            
+        print("[predict] Load successful.")
+        return model, scaler
+    except Exception as e:
+        print(f"[predict] CRITICAL ERROR: {str(e)}")
+        # Fallback to joblib if pickle fails
+        try:
+            return joblib.load(MODEL_PATH), joblib.load(SCALER_PATH)
+        except:
+            raise e
 
 
 # ── Risk level helper ─────────────────────────────────────────────────────────
