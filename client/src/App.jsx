@@ -34,11 +34,22 @@ function App() {
       .then(data => setApiStatus(data.status === 'ok' ? 'Online' : 'Offline'))
       .catch(() => setApiStatus('Offline'));
       
-    // Fetch real stats if available
+    // Fetch real stats
     fetch('/stats')
       .then(res => res.json())
       .then(data => setStats(data))
       .catch(err => console.log('Using default stats fallback'));
+
+    // Fetch full metrics for chart
+    fetch('/metrics')
+      .then(res => res.json())
+      .then(data => {
+        const filtered = data.metrics
+          .filter(m => m.condition === 'after_smote')
+          .map(m => ({ name: m.model, recall: m.recall, f1: m.f1 }));
+        setChartData(filtered);
+      })
+      .catch(err => console.log('Using default chart fallback'));
   }, []);
 
   const handleChange = (e) => {
@@ -86,11 +97,11 @@ function App() {
     }
   };
 
-  const chartData = [
+  const [chartData, setChartData] = useState([
     { name: 'Logistic Regression', recall: 0.91, f1: 0.88 },
     { name: 'Random Forest', recall: 0.89, f1: 0.90 },
     { name: 'XGBoost', recall: 0.92, f1: 0.91 },
-  ];
+  ]);
 
   return (
     <div className="dashboard">

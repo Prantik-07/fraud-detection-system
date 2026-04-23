@@ -20,7 +20,9 @@ pydantic>=2.0.0
 python-multipart>=0.0.6
 
 # Dashboard
-# (React frontend used instead of Streamlit)# Notebook
+# (React frontend used instead of Streamlit)
+
+# Notebook
 ipykernel>=6.25.0
 jupyterlab>=4.0.0
 

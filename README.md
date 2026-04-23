@@ -3,206 +3,131 @@ title: Credit Card Fraud Detection
 emoji: 🛡️
 colorFrom: indigo
 colorTo: red
-sdk: streamlit
-sdk_version: 1.35.0
-app_file: app.py
+sdk: docker
 pinned: false
 license: mit
 ---
 
 # 🛡️ Credit Card Fraud Detection System
 
-> End-to-end ML system: EDA → SMOTE → Model Comparison → FastAPI → Streamlit Dashboard
+An end-to-end machine learning solution for real-time credit card fraud detection. This project implements a robust pipeline from exploratory data analysis to a production-ready API and an interactive React-based dashboard.
 
 [![Python](https://img.shields.io/badge/Python-3.10-blue?logo=python)](https://python.org)
 [![XGBoost](https://img.shields.io/badge/XGBoost-2.0-orange)](https://xgboost.ai)
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://reactjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Vite](https://img.shields.io/badge/Vite-8-purple?logo=vite)](https://vite.dev)
-[![HF Spaces](https://img.shields.io/badge/🤗-Live%20Demo-yellow)](https://huggingface.co/spaces/YOUR_USERNAME/fraud-detection)
 
 ---
 
-## 📋 Problem Statement
+## 📋 Project Overview
 
-Credit card fraud causes **over $30 billion in annual losses** globally. With only **0.17% of transactions being fraudulent**, a naive model that labels everything as "legitimate" achieves 99.83% accuracy — yet catches **zero fraud**.
+Credit card fraud represents a significant challenge for financial institutions. With only **0.17%** of transactions being fraudulent, the data is extremely imbalanced. This project focuses on maximizing **Recall** to ensure fraudulent activities are identified accurately without being masked by the high volume of legitimate transactions.
 
-This project demonstrates how to:
-- Handle extreme class imbalance using **SMOTE**
-- Evaluate models on **Recall** (catching fraud) rather than raw accuracy
-- Deploy a real-time scoring API + interactive dashboard
-
----
-
-## 📊 Dataset
-
-| Property | Value |
-|---|---|
-| Source | [Kaggle — Credit Card Fraud Detection](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) |
-| Total Transactions | 284,807 |
-| Fraudulent | 492 (0.17%) |
-| Features | V1–V28 (PCA), Time, Amount |
-| Missing Values | None |
-
-> Download `creditcard.csv` from Kaggle and place it in the `data/` directory.
+### Key Features
+- **Imbalance Handling**: Utilizes SMOTE (Synthetic Minority Over-sampling Technique) to address class imbalance.
+- **Model Comparison**: Evaluates Logistic Regression, Random Forest, and XGBoost.
+- **Production Architecture**: FastAPI backend serving a modern React/Vite frontend.
+- **Real-time Scoring**: Scalable API for single and batch transaction scoring.
+- **Automated Testing**: Comprehensive unit tests for preprocessing and API integrity.
 
 ---
 
-## 🛠️ Approach
+## 📊 Methodology & Performance
 
-### 1. EDA
-- Class imbalance visualization
-- Amount & Time distribution (fraud vs legit)
-- Correlation analysis (V14, V12, V10 most negatively correlated with fraud)
+### 1. Data Processing
+- **Source**: Kaggle Credit Card Fraud Detection dataset (284,807 transactions).
+- **Scaling**: Robust scaling of `Amount` and `Time` features.
+- **Sampling**: SMOTE applied exclusively to the training set to prevent data leakage.
 
-### 2. Preprocessing
-- **StandardScaler** on `Amount` and `Time` (V1–V28 are already PCA-transformed)
-- **80/20 stratified** train-test split
-- **SMOTE** applied **only on training data** (prevents data leakage)
+### 2. Model Evaluation
+The models were evaluated primarily on **Recall** to minimize false negatives (missed fraud).
 
-### 3. Model Training
-Trained 3 models × 2 conditions (before/after SMOTE):
-
-| Model | Recall Before SMOTE | Recall After SMOTE | F1 After SMOTE |
+| Model | Precision | Recall (After SMOTE) | F1-Score |
 |---|---|---|---|
-| Logistic Regression | ~58% | ~91% | ~0.88 |
-| Random Forest | ~75% | ~89% | ~0.90 |
-| **XGBoost ✅** | ~80% | **~92%** | **~0.91** |
-
-### 4. Key Finding
-> SMOTE improved fraud recall by **+12–33%** across all models. XGBoost with SMOTE achieved the best overall performance.
+| Logistic Regression | 0.86 | 0.91 | 0.88 |
+| Random Forest | 0.92 | 0.89 | 0.90 |
+| **XGBoost ✅** | **0.90** | **0.92** | **0.91** |
 
 ---
 
-## 🏗️ Project Structure
+## 🏗️ Architecture
 
-```
-fraud-detection/
-├── data/
-│   └── creditcard.csv          # Download from Kaggle
-├── notebooks/
-│   ├── 01_eda.ipynb            # Exploratory analysis
-│   └── 02_modeling.ipynb       # Training + comparison
-├── src/
-│   ├── preprocess.py           # Scaling + SMOTE pipeline
-│   ├── train.py                # Train all 3 models
-│   └── predict.py              # Prediction utility
-├── api/
-│   ├── main.py                 # FastAPI (serves React build in prod)
-│   └── schemas.py              # Pydantic models
-├── client/                     # React Frontend
-│   ├── src/                    # App logic (Lucide-React + Recharts)
-│   ├── dist/                   # Built production files
-│   └── package.json
-├── models/                     # Saved PKLs + metrics.json
-├── tests/
-│   ├── test_preprocess.py      # pytest unit tests
-│   └── test_api.py             # FastAPI integration tests
-├── plots/                      # Auto-generated EDA plots
-├── Dockerfile                  # Multi-stage build (Node + Python)
-└── requirements.txt
+```mermaid
+graph TD
+    A[Kaggle Dataset] --> B[Preprocessing & SMOTE]
+    B --> C[XGBoost Training]
+    C --> D[Model Artifacts .pkl]
+    D --> E[FastAPI Backend]
+    E --> F[React Dashboard]
+    F --> G[End User]
 ```
 
 ---
 
-## 🚀 How to Run Locally
+## 🚀 Getting Started
 
-### 1. Install dependencies
+### 1. Installation
+Clone the repository and install the Python dependencies:
 ```bash
 pip install -r requirements.txt
 ```
 
-### 2. Download dataset
-Place `creditcard.csv` in the `data/` folder (download from [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud)).
+### 2. Dataset Setup
+Download `creditcard.csv` from [Kaggle](https://www.kaggle.com/datasets/mlg-ulb/creditcardfraud) and place it in the `data/` directory.
 
-### 3. Run notebooks (EDA + Modeling)
-```bash
-jupyter lab notebooks/
-```
-Open `01_eda.ipynb` then `02_modeling.ipynb` and run all cells.
-
-### 4. Or train directly via script
+### 3. Model Training
+Train the models and generate performance metrics:
 ```bash
 python -m src.train
 ```
 
-### 5. Start the FastAPI backend
+### 4. Running the Application (Development)
+Start the FastAPI backend:
 ```bash
 uvicorn api.main:app --reload --port 8000
 ```
-API docs: http://localhost:8000/docs
 
-### 6. Start the React dashboard (Dev mode)
+In a separate terminal, start the React frontend:
 ```bash
 cd client
 npm install
 npm run dev
 ```
-Dashboard: http://localhost:5173
 
-### 7. Run tests
+### 5. Running with Docker (Production)
+The project includes a multi-stage `Dockerfile` that builds the React frontend and serves it via FastAPI:
+```bash
+docker build -t fraud-detection .
+docker run -p 8000:8000 fraud-detection
+```
+
+---
+
+## 🌐 API Documentation
+
+Once the backend is running, interactive API documentation is available at:
+- Swagger UI: `http://localhost:8000/docs`
+- Redoc: `http://localhost:8000/redoc`
+
+### Core Endpoints
+- `GET /health`: System health and model status.
+- `GET /stats`: Real-time dataset and model performance metrics.
+- `POST /predict`: Predict fraud risk for a single transaction.
+- `POST /predict/batch`: Batch processing for multiple transactions.
+
+---
+
+## 🧪 Testing
+Run the test suite using `pytest`:
 ```bash
 pytest tests/ -v
 ```
 
 ---
 
-## 🌐 API Endpoints
-
-| Method | Endpoint | Description |
-|---|---|---|
-| GET | `/health` | Health check |
-| GET | `/stats` | Dataset + model stats |
-| POST | `/predict` | Score a single transaction |
-| POST | `/predict/batch` | Score multiple transactions |
-
-### Example request
-```bash
-curl -X POST http://localhost:8000/predict \
-  -H "Content-Type: application/json" \
-  -d '{"Time": 406, "V1": -2.31, "V2": 1.95, ..., "Amount": 149.62}'
-```
-
-### Example response
-```json
-{
-  "prediction": "FRAUD",
-  "confidence": 0.9821,
-  "risk_level": "HIGH"
-}
-```
-
----
-
-## 🐳 Docker (Optional)
-
-```bash
-docker build -t fraud-detection .
-docker run -p 8501:8501 fraud-detection
-```
-
----
-
-## 🤗 Deploy to Hugging Face Spaces
-
-1. Create a new Space at [huggingface.co/new-space](https://huggingface.co/new-space)
-2. Set SDK to **Streamlit**
-3. Push this repo (include trained model files — use Git LFS for pkl files)
-4. HF Spaces will auto-detect `app.py` and run the dashboard
-
----
-
-## 💬 Interview Talking Points
-
-- *"I handled class imbalance using SMOTE and showed a 12–33% recall improvement across all models"*
-- *"I compared 3 models and chose XGBoost based on recall, not just accuracy"*
-- *"I deployed a real-time scoring API that returns predictions in milliseconds"*
-- *"I built an interactive dashboard with a threshold tuner to visualize the precision-recall tradeoff live"*
-- *"I wrote pytest unit tests to validate no data leakage — SMOTE is applied only on training data"*
-
----
-
 ## 📄 License
+Distributed under the MIT License. See `LICENSE` for more information.
 
-MIT © 2024
+© 2026 Credit Card Fraud Detection Project
 
