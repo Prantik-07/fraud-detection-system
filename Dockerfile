@@ -32,13 +32,8 @@ COPY --chown=user . .
 COPY --from=frontend-builder --chown=user /app/client/dist ./client/dist
 
 # ── Train Model on Server to guarantee compatibility ─────────────────────────
-# We download a public mirror of the creditcard.csv dataset
-RUN mkdir -p data && \
-    wget -O data/creditcard.csv https://github.com/davidechicco/CreditCardFraudDetection/raw/main/creditcard.csv && \
-    python -m src.train
-
 # Expose port
 EXPOSE 7860
 
-# Run FastAPI
+# Start the application
 CMD ["uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "7860"]
