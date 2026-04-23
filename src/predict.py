@@ -9,13 +9,12 @@ Usage:
 import os
 import json
 import joblib
-import pickle
 import numpy as np
 import pandas as pd
 
 # ── Paths ─────────────────────────────────────────────────────────────────────
-MODEL_PATH  = os.path.join("models", "best_model.pkl")
-SCALER_PATH = os.path.join("models", "scaler.pkl")
+MODEL_PATH  = os.path.join("models", "best_model.bin")
+SCALER_PATH = os.path.join("models", "scaler.bin")
 
 V_COLS  = [f"V{i}" for i in range(1, 29)]
 ALL_COLS = ["Time"] + V_COLS + ["Amount"]   # 30 features total
@@ -23,25 +22,9 @@ ALL_COLS = ["Time"] + V_COLS + ["Amount"]   # 30 features total
 
 # ── Load artefacts ────────────────────────────────────────────────────────────
 def load_model_and_scaler():
-    """Load model and scaler from pkl files with cross-version safety."""
-    try:
-        print(f"[predict] Loading model: {MODEL_PATH}")
-        with open(MODEL_PATH, 'rb') as f:
-            model = pickle.load(f)
-        
-        print(f"[predict] Loading scaler: {SCALER_PATH}")
-        with open(SCALER_PATH, 'rb') as f:
-            scaler = pickle.load(f)
-            
-        print("[predict] Load successful.")
-        return model, scaler
-    except Exception as e:
-        print(f"[predict] CRITICAL ERROR: {str(e)}")
-        # Fallback to joblib if pickle fails
-        try:
-            return joblib.load(MODEL_PATH), joblib.load(SCALER_PATH)
-        except:
-            raise e
+    model  = joblib.load(MODEL_PATH)
+    scaler = joblib.load(SCALER_PATH)
+    return model, scaler
 
 
 # ── Risk level helper ─────────────────────────────────────────────────────────
@@ -60,7 +43,7 @@ def predict_one(features: list, model=None, scaler=None) -> dict:
     Predict a single transaction.
 
     Args:
-        features: List of 30 floats → [Time, V1..V28, Amount]
+        features: List of 30 floats -> [Time, V1..V28, Amount]
         model:    Pre-loaded model (optional — loads from disk if None)
         scaler:   Pre-loaded scaler (optional)
 
@@ -108,7 +91,7 @@ def predict_batch(csv_path: str, output_path: str = "predictions.csv"):
     df["risk_level"] = [get_risk_level(p) for p in probs]
 
     df.to_csv(output_path, index=False)
-    print(f"[predict] Results saved → {output_path}")
+    print(f"[predict] Results saved -> {output_path}")
     return df
 
 
@@ -127,8 +110,8 @@ if __name__ == "__main__":
     features = [args.time] + [getattr(args, f"v{i}") for i in range(1, 29)] + [args.amount]
     result = predict_one(features)
 
-    print("\n" + "─"*40)
+    print("\n" + "-"*40)
     print(f"  Prediction : {result['prediction']}")
     print(f"  Confidence : {result['confidence']:.2%}")
     print(f"  Risk Level : {result['risk_level']}")
-    print("─"*40)
+    print("-"*40)
