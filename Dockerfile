@@ -34,7 +34,7 @@ COPY --from=frontend-builder --chown=user /app/client/dist ./client/dist
 # ── Train Model on Server to guarantee compatibility ─────────────────────────
 # We download a public mirror of the creditcard.csv dataset
 RUN mkdir -p data && \
-    wget -O data/creditcard.csv https://raw.githubusercontent.com/nsethi31/Credit-Card-Fraud-Detection/master/creditcard.csv && \
+    wget -O data/creditcard.csv https://github.com/davidechicco/CreditCardFraudDetection/raw/master/creditcard.csv && \
     python -m src.train
 
 # Expose port
