@@ -1,14 +1,3 @@
----
-title: Credit Card Fraud Detection
-emoji: 🛡️
-colorFrom: indigo
-colorTo: red
-sdk: docker
-app_port: 7860
-pinned: false
-license: mit
----
-
 # 🛡️ Credit Card Fraud Detection System
 
 An end-to-end machine learning solution for real-time credit card fraud detection. This project implements a robust pipeline from exploratory data analysis to a production-ready API and an interactive React-based dashboard.
@@ -18,6 +7,11 @@ An end-to-end machine learning solution for real-time credit card fraud detectio
 [![React](https://img.shields.io/badge/React-19-blue?logo=react)](https://reactjs.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.111-green?logo=fastapi)](https://fastapi.tiangolo.com)
 [![Vite](https://img.shields.io/badge/Vite-8-purple?logo=vite)](https://vite.dev)
+
+---
+## 🚀 Live Demo
+
+👉 https://huggingface.co/spaces/Prantik-07/fraud-detection-dashboard
 
 ---
 
